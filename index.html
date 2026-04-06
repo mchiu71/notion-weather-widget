@@ -66,7 +66,8 @@
 
 <script>
     const API_KEY = '1c47d4c7d6694de1731919721ad0d2a2'; // <<<=== YOUR OPENWEATHERMAP API KEY IS HERE ===>>>
-    const CITY = 'Saratoga,US'; // Set to Saratoga, CA
+    const LATITUDE = 37.3382; // Latitude for San Jose, CA (close to Saratoga)
+    const LONGITUDE = -121.8863; // Longitude for San Jose, CA
     const UNITS = 'imperial'; // Use 'imperial' for Fahrenheit
 
     const widgetDateElement = document.getElementById('widget-date');
@@ -89,23 +90,23 @@
     }
 
     // Function to fetch weather data
-    async function fetchWeatherData(city) {
+    async function fetchWeatherData(lat, lon) {
         if (API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY' || !API_KEY) {
             weatherErrorElement.textContent = 'Please replace "YOUR_OPENWEATHERMAP_API_KEY" with your actual API key.';
             weatherErrorElement.style.display = 'block';
             return;
         }
 
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=${UNITS}`;
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}`;
 
         try {
             const response = await fetch(url);
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'City not found or API error.');
+                throw new Error(errorData.message || 'API error.');
             }
             const data = await response.json();
-            
+
             widgetCityElement.textContent = data.name;
             widgetTempElement.textContent = `${Math.round(data.main.temp)}°F`; // Display in Fahrenheit
             widgetDescriptionElement.textContent = data.weather[0].description;
@@ -129,7 +130,7 @@
         updateDateTime();
         setInterval(updateDateTime, 1000); // Update time every second
 
-        fetchWeatherData(CITY);
-        setInterval(() => fetchWeatherData(CITY), 600000); // Update weather every 10 minutes (600000 ms)
+        fetchWeatherData(LATITUDE, LONGITUDE);
+        setInterval(() => fetchWeatherData(LATITUDE, LONGITUDE), 600000); // Update weather every 10 minutes (600000 ms)
     });
 </script>

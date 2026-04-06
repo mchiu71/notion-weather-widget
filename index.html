@@ -66,8 +66,8 @@
 
 <script>
     const API_KEY = '1c47d4c7d6694de1731919721ad0d2a2'; // <<<=== YOUR OPENWEATHERMAP API KEY IS HERE ===>>>
-    const LATITUDE = 37.3382; // Latitude for San Jose, CA (close to Saratoga)
-    const LONGITUDE = -121.8863; // Longitude for San Jose, CA
+    const LATITUDE = 37.2639; // Latitude for Saratoga, CA
+    const LONGITUDE = -122.0233; // Longitude for Saratoga, CA
     const UNITS = 'imperial'; // Use 'imperial' for Fahrenheit
 
     const widgetDateElement = document.getElementById('widget-date');
@@ -107,7 +107,7 @@
             }
             const data = await response.json();
 
-            widgetCityElement.textContent = data.name;
+            widgetCityElement.textContent = 'Saratoga, CA'; // Explicitly set city name
             widgetTempElement.textContent = `${Math.round(data.main.temp)}°F`; // Display in Fahrenheit
             widgetDescriptionElement.textContent = data.weather[0].description;
             widgetHumidityElement.textContent = `Humidity: ${data.main.humidity}%`;

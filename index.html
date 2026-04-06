@@ -1,136 +1,85 @@
-<div id="myWeatherWidget" class="weather-widget">
-    <h2 id="widget-city">Loading...</h2>
-    <p id="widget-date" class="date-time"></p>
-    <p id="widget-time" class="date-time"></p>
-    <p id="widget-temp" class="temp"></p>
-    <p id="widget-description" class="description"></p>
-    <p id="widget-humidity"></p>
-    <p id="widget-wind-speed"></p>
-    <div id="weather-error" class="error-message"></div>
-</div>
-
-<style>
-    /* Widget Container Styling */
-    .weather-widget {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        max-width: 300px;
-        text-align: center;
-        margin: 20px auto; /* Centered for demo, remove 'auto' for specific placement */
-    }
-
-    .weather-widget h2 {
-        margin-top: 0;
-        font-size: 1.5em;
-    }
-
-    .weather-widget p {
-        margin: 5px 0;
-        font-size: 1.1em;
-    }
-
-    .weather-widget .temp {
-        font-size: 2.5em;
-        font-weight: bold;
-        margin: 10px 0;
-    }
-
-    .weather-widget .description {
-        font-size: 1.2em;
-        text-transform: capitalize;
-    }
-
-    .weather-widget .city {
-        font-size: 1.3em;
-        margin-bottom: 15px;
-    }
-
-    .weather-widget .date-time {
-        font-size: 0.9em;
-        opacity: 0.9;
-    }
-
-    .weather-widget .error-message {
-        color: #ffdddd;
-        background-color: #c0392b;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 10px;
-        display: none; /* Hidden by default */
-    }
-</style>
-
-<script>
-    const API_KEY = '1c47d4c7d6694de1731919721ad0d2a2'; // <<<=== YOUR OPENWEATHERMAP API KEY IS HERE ===>>>
-    const LATITUDE = 37.3382; // Latitude for San Jose, CA (close to Saratoga)
-    const LONGITUDE = -121.8863; // Longitude for San Jose, CA
-    const UNITS = 'imperial'; // Use 'imperial' for Fahrenheit
-
-    const widgetDateElement = document.getElementById('widget-date');
-    const widgetTimeElement = document.getElementById('widget-time');
-    const widgetCityElement = document.getElementById('widget-city');
-    const widgetTempElement = document.getElementById('widget-temp');
-    const widgetDescriptionElement = document.getElementById('widget-description');
-    const widgetHumidityElement = document.getElementById('widget-humidity');
-    const widgetWindSpeedElement = document.getElementById('widget-wind-speed');
-    const weatherErrorElement = document.getElementById('weather-error');
-
-    // Function to update date and time
-    function updateDateTime() {
-        const now = new Date();
-        const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-
-        widgetDateElement.textContent = now.toLocaleDateString(undefined, optionsDate);
-        widgetTimeElement.textContent = now.toLocaleTimeString(undefined, optionsTime);
-    }
-
-    // Function to fetch weather data
-    async function fetchWeatherData(lat, lon) {
-        if (API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY' || !API_KEY) {
-            weatherErrorElement.textContent = 'Please replace "YOUR_OPENWEATHERMAP_API_KEY" with your actual API key.';
-            weatherErrorElement.style.display = 'block';
-            return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date & Time Widget</title>
+    <style>
+        /* Widget Container Styling */
+        body {
+            margin: 0; /* Remove default body margin */
+            font-family: Arial, sans-serif;
+            background: none; /* Transparent background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Full viewport height for centering */
+        }
+        .datetime-widget {
+            background: linear-gradient(135deg, #4A90E2 0%, #5BBAFF 100%); /* A pleasant blue gradient */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 250px;
+            margin: 0; /* Remove margin, centering handled by body */
+            line-height: 1.4;
+            font-size: 1.1em;
         }
 
-        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}`;
-
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'API error.');
-            }
-            const data = await response.json();
-
-            widgetCityElement.textContent = data.name;
-            widgetTempElement.textContent = `${Math.round(data.main.temp)}°F`; // Display in Fahrenheit
-            widgetDescriptionElement.textContent = data.weather[0].description;
-            widgetHumidityElement.textContent = `Humidity: ${data.main.humidity}%`;
-            widgetWindSpeedElement.textContent = `Wind: ${Math.round(data.wind.speed)} mph`; // Display in mph
-            weatherErrorElement.style.display = 'none'; // Hide error if successful
-        } catch (error) {
-            console.error("Failed to fetch weather data:", error);
-            widgetCityElement.textContent = 'Weather';
-            widgetTempElement.textContent = '--°F';
-            widgetDescriptionElement.textContent = 'N/A';
-            widgetHumidityElement.textContent = '';
-            widgetWindSpeedElement.textContent = '';
-            weatherErrorElement.textContent = `Error: ${error.message}`;
-            weatherErrorElement.style.display = 'block';
+        .datetime-widget .date-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
         }
-    }
 
-    // Initialize and update
-    document.addEventListener('DOMContentLoaded', () => {
-        updateDateTime();
-        setInterval(updateDateTime, 1000); // Update time every second
+        .datetime-widget .time-display {
+            font-size: 1.8em;
+            font-weight: bolder;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
 
-        fetchWeatherData(LATITUDE, LONGITUDE);
-        setInterval(() => fetchWeatherData(LATITUDE, LONGITUDE), 600000); // Update weather every 10 minutes (600000 ms)
-    });
-</script>
+        .datetime-widget .day-display {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- This is your embeddable widget -->
+    <div id="myDateTimeWidget" class="datetime-widget">
+        <p id="widget-day" class="day-display"></p>
+        <p id="widget-date" class="date-display"></p>
+        <p id="widget-time" class="time-display"></p>
+    </div>
+
+    <script>
+        const widgetDayElement = document.getElementById('widget-day');
+        const widgetDateElement = document.getElementById('widget-date');
+        const widgetTimeElement = document.getElementById('widget-time');
+
+        // Function to update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const optionsDay = { weekday: 'long' };
+            const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
+            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+
+            widgetDayElement.textContent = now.toLocaleDateString(undefined, optionsDay);
+            widgetDateElement.textContent = now.toLocaleDateString(undefined, optionsDate);
+            widgetTimeElement.textContent = now.toLocaleTimeString(undefined, optionsTime);
+        }
+
+        // Initialize and update
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateTime();
+            setInterval(updateDateTime, 1000); // Update time every second
+        });
+    </script>
+</body>
+</html>

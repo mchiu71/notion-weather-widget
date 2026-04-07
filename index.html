@@ -3,87 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Date, Time & Weather Widget</title>
+    <title>Date, Time & 5-Day Weather Widget</title>
     <style>
-        /* Widget Container Styling */
+        /* Base Styling */
         body {
-            margin: 0; /* Remove default body margin */
-            font-family: Arial, sans-serif;
-            background: none; /* Transparent background */
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Slightly nicer font */
+            background: none;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Full viewport height for centering */
+            min-height: 100vh;
         }
         .weather-widget-container {
             display: flex;
-            justify-content: space-between; /* Distribute space evenly */
-            align-items: stretch; /* Stretch panes to equal height */
-            background: linear-gradient(135deg, #4A90E2 0%, #5BBAFF 100%); /* A pleasant blue gradient */
+            background: linear-gradient(135deg, #4A90E2 0%, #5BBAFF 100%);
             color: white;
             padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            max-width: 650px; /* Adjusted max width for three panes */
+            border-radius: 12px; /* Slightly more rounded */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            max-width: 900px; /* Increased max width for more room */
             margin: 20px auto;
-            line-height: 1.3;
+            line-height: 1.4;
+            overflow: hidden; /* Ensure content doesn't spill */
+            position: relative; /* For error message positioning */
         }
 
+        /* Pane Styling */
         .pane {
-            flex: 1; /* Each pane takes equal width */
-            padding: 10px;
+            padding: 10px 15px; /* More internal padding */
             text-align: center;
-            border-right: 1px solid rgba(255, 255, 255, 0.3); /* Separator */
-            display: flex; /* Use flex for internal content alignment */
-            flex-direction: column;
-            justify-content: center; /* Center content vertically */
-            min-width: 0; /* Allow shrinking */
-        }
-
-        .pane:last-child {
-            border-right: none; /* No separator on the last pane */
-        }
-
-        .pane h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-
-        /* Specific styles for elements */
-        .time-display { font-size: 2.2em; font-weight: bolder; }
-        .date-display { font-size: 1.0em; opacity: 0.9; margin-top: 5px; }
-
-        .current-weather-pane #widget-city { font-size: 1.4em; font-weight: bold; margin-bottom: 5px; }
-        .temp-display { font-size: 2.5em; font-weight: bold; margin: 5px 0;}
-        .conditions-display { font-size: 1.1em; text-transform: capitalize; margin-bottom: 5px; }
-        .high-low-display { font-size: 1.0em; opacity: 0.9; }
-
-        .forecast-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            text-align: left; /* Align forecast items left */
-            font-size: 0.9em;
-        }
-        .forecast-item {
             display: flex;
-            justify-content: space-between; /* Space out day and temp */
-            margin-bottom: 5px;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.2); /* Subtle separator */
+            min-width: 120px; /* Minimum width for each pane */
         }
-        .forecast-day { font-weight: bold; }
-        .forecast-temp { margin-left: 10px; }
+        .pane:last-child { border-right: none; }
 
+        /* Left Pane - Time & Date */
+        .time-date-pane {
+            flex: 0 0 160px; /* Fixed width for time/date */
+        }
+        .time-display { font-size: 2.5em; font-weight: bolder; margin-bottom: 0px; }
+        .date-display { font-size: 0.9em; opacity: 0.9; margin-top: 0px; }
+
+        /* Middle Pane - Current Weather */
+        .current-weather-pane {
+            flex: 1; /* Takes remaining space, allows it to grow */
+            position: relative; /* For superimposing */
+            overflow: hidden;
+        }
+        .weather-emoji-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8em; /* Large emoji for background */
+            opacity: 0.2; /* Translucent */
+            z-index: 0;
+            line-height: 1; /* Prevent extra spacing for emoji */
+        }
+        .weather-text-overlay {
+            position: relative;
+            z-index: 1;
+            /* Ensure text is readable over emoji */
+            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+        }
+        #widget-city { font-size: 1.5em; font-weight: bold; margin-bottom: 5px; }
+        .temp-display { font-size: 3em; font-weight: bold; margin: 0px 0 5px 0;}
+        .conditions-display { font-size: 1.1em; text-transform: capitalize; margin-bottom: 5px; }
+        .high-low-display { font-size: 0.9em; opacity: 0.9; }
+
+        /* Right Pane - 5-Day Forecast */
+        .forecast-pane {
+            flex: 2; /* Allow forecast pane to grow more */
+            min-width: 300px; /* Minimum width for forecast */
+        }
+        .forecast-pane h3 {
+            margin-top: 0;
+            margin-bottom: 15px; /* More space for title */
+            font-size: 1.1em;
+        }
+        .forecast-horizontal-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start; /* Align items to top */
+            flex-wrap: nowrap; /* Keep items in one line */
+            overflow-x: auto; /* Allow horizontal scrolling if too many days */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            padding-bottom: 5px; /* Space for scrollbar if present */
+            padding-top: 5px;
+        }
+        .forecast-day-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 8px; /* Spacing around each day */
+            flex-shrink: 0; /* Don't shrink forecast items */
+            position: relative;
+        }
+        .vertical-separator {
+            width: 1px;
+            background-color: rgba(255, 255, 255, 0.2);
+            align-self: stretch;
+            margin: 0 5px;
+            flex-shrink: 0; /* Don't shrink separator */
+        }
+        .forecast-day-abbr { font-weight: bold; font-size: 0.85em; margin-bottom: 3px; }
+        .forecast-emoji { font-size: 2em; margin: 3px 0; line-height: 1; }
+        .forecast-temps { font-size: 0.8em; line-height: 1.2; }
+        .forecast-high { font-weight: bold; }
+        .forecast-low { opacity: 0.8; }
+
+        /* Error Message */
         .error-message {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
             color: #ffdddd;
             background-color: #c0392b;
-            padding: 10px;
+            padding: 8px 15px;
             border-radius: 5px;
             margin-top: 10px;
-            display: none; /* Hidden by default */
-            width: 100%; /* Take full width */
-            box-sizing: border-box; /* Include padding in width */
+            display: none;
+            width: calc(100% - 30px); /* Full width minus padding */
+            box-sizing: border-box;
             text-align: center;
+            font-size: 0.85em;
+            z-index: 10; /* Ensure it's on top */
         }
     </style>
 </head>
@@ -91,22 +140,31 @@
 
     <!-- This is your embeddable widget -->
     <div class="weather-widget-container">
+        <!-- Pane 1: Time & Date -->
         <div class="pane time-date-pane">
             <p id="widget-time" class="time-display"></p>
             <p id="widget-date" class="date-display"></p>
         </div>
+
+        <!-- Pane 2: Current Weather -->
         <div class="pane current-weather-pane">
-            <h3 id="widget-city">Loading...</h3>
-            <p id="widget-current-temp" class="temp-display"></p>
-            <p id="widget-conditions" class="conditions-display"></p>
-            <p id="widget-high-low" class="high-low-display"></p>
+            <div class="weather-emoji-bg" id="widget-current-emoji-bg"></div>
+            <div class="weather-text-overlay">
+                <h3 id="widget-city">Saratoga, CA</h3>
+                <p id="widget-current-temp" class="temp-display"></p>
+                <p id="widget-conditions" class="conditions-display"></p>
+                <p id="widget-high-low" class="high-low-display"></p>
+            </div>
         </div>
+
+        <!-- Pane 3: 5-Day Forecast -->
         <div class="pane forecast-pane">
             <h3>5-Day Forecast</h3>
-            <div id="widget-forecast-list" class="forecast-list">
+            <div id="widget-forecast-horizontal-container" class="forecast-horizontal-container">
                 <!-- Forecast items will go here -->
             </div>
         </div>
+
         <div id="weather-error" class="error-message"></div>
     </div>
 
@@ -122,8 +180,23 @@
         const widgetCurrentTempElement = document.getElementById('widget-current-temp');
         const widgetConditionsElement = document.getElementById('widget-conditions');
         const widgetHighLowElement = document.getElementById('widget-high-low');
-        const widgetForecastList = document.getElementById('widget-forecast-list');
+        const widgetCurrentEmojiBg = document.getElementById('widget-current-emoji-bg');
+        const widgetForecastHorizontalContainer = document.getElementById('widget-forecast-horizontal-container');
         const weatherErrorElement = document.getElementById('weather-error');
+
+        // Maps weather condition codes to Unicode emojis
+        function getWeatherEmoji(weatherId) {
+            if (weatherId >= 200 && weatherId < 300) return 'â›ˆï¸'; // Thunderstorm
+            if (weatherId >= 300 && weatherId < 400) return 'ðŸŒ§ï¸'; // Drizzle
+            if (weatherId >= 500 && weatherId < 600) return 'ðŸŒ§ï¸'; // Rain
+            if (weatherId >= 600 && weatherId < 700) return 'â„ï¸'; // Snow
+            if (weatherId >= 700 && weatherId < 800) return 'ðŸŒ«ï¸'; // Atmosphere (mist, fog, haze)
+            if (weatherId === 800) return 'â˜€ï¸'; // Clear sky
+            if (weatherId === 801) return 'ðŸŒ¤ï¸'; // Few clouds
+            if (weatherId === 802) return 'ðŸŒ¥ï¸'; // Scattered clouds
+            if (weatherId === 803 || weatherId === 804) return 'â˜ï¸'; // Broken clouds, overcast
+            return 'â“'; // Unknown
+        }
 
         // Function to update date and time
         function updateDateTime() {
@@ -146,18 +219,21 @@
                     throw new Error(errorData.message || 'API error for current weather.');
                 }
                 const data = await response.json();
-                
-                widgetCityElement.textContent = data.name;
-                widgetCurrentTempElement.textContent = `${Math.round(data.main.temp)}°F`;
+
+                // Update current weather elements
+                widgetCurrentEmojiBg.textContent = getWeatherEmoji(data.weather[0].id);
+                widgetCityElement.textContent = 'Saratoga, CA'; // Explicitly set city name
+                widgetCurrentTempElement.textContent = `${Math.round(data.main.temp)}Â°F`;
                 widgetConditionsElement.textContent = data.weather[0].description;
-                widgetHighLowElement.textContent = `H: ${Math.round(data.main.temp_max)}°F | L: ${Math.round(data.main.temp_min)}°F`;
+                widgetHighLowElement.textContent = `H: ${Math.round(data.main.temp_max)}Â°F | L: ${Math.round(data.main.temp_min)}Â°F`;
                 weatherErrorElement.style.display = 'none'; // Hide error if successful
             } catch (error) {
                 console.error("Failed to fetch current weather data:", error);
-                widgetCityElement.textContent = 'Saratoga, CA'; // Keep fixed city name
-                widgetCurrentTempElement.textContent = '--°F';
+                widgetCurrentEmojiBg.textContent = 'â“';
+                widgetCityElement.textContent = 'Saratoga, CA';
+                widgetCurrentTempElement.textContent = '--Â°F';
                 widgetConditionsElement.textContent = 'N/A';
-                widgetHighLowElement.textContent = 'H:--°F | L:--°F';
+                widgetHighLowElement.textContent = 'H:--Â°F | L:--Â°F';
                 weatherErrorElement.textContent = `Error: ${error.message}`;
                 weatherErrorElement.style.display = 'block';
             }
@@ -174,50 +250,60 @@
                     throw new Error(errorData.message || 'API error for forecast.');
                 }
                 const data = await response.json();
-                
-                // Process 5-day / 3-hour forecast to get daily high temperatures
-                const dailyForecasts = {}; // { 'YYYY-MM-DD': { max_temp: X, day: 'Mon' } }
-                const today = new Date();
-                today.setHours(0, 0, 0, 0); // Normalize today to start of day
+
+                // Process 5-day / 3-hour forecast to get daily high and low temperatures
+                const dailyForecasts = {}; // { 'YYYY-MM-DD': { max_temp: X, min_temp: Y, day: 'Mon', weatherId: Z } }
 
                 data.list.forEach(item => {
                     const date = new Date(item.dt * 1000); // Convert timestamp to Date object
-                    date.setHours(0, 0, 0, 0); // Normalize to start of day for comparison
-
                     const dateKey = date.toISOString().split('T')[0];
                     const dayName = date.toLocaleDateString(undefined, { weekday: 'short' });
 
                     if (!dailyForecasts[dateKey]) {
-                        dailyForecasts[dateKey] = { max_temp: -Infinity, day: dayName };
+                        dailyForecasts[dateKey] = { max_temp: -Infinity, min_temp: Infinity, day: dayName, weatherId: item.weather[0].id };
                     }
                     dailyForecasts[dateKey].max_temp = Math.max(dailyForecasts[dateKey].max_temp, item.main.temp_max);
+                    dailyForecasts[dateKey].min_temp = Math.min(dailyForecasts[dateKey].min_temp, item.main.temp_min);
+                    // Update weatherId if a clearer one appears later in the day
+                    if (item.weather[0].id !== 800 && item.weather[0].id > dailyForecasts[dateKey].weatherId) {
+                         dailyForecasts[dateKey].weatherId = item.weather[0].id;
+                    }
                 });
 
-                // Convert to array and sort by date
+                // Convert to array and sort by date, then take up to 5 days
                 const sortedDailyForecasts = Object.keys(dailyForecasts)
                     .sort()
+                    .slice(0, 5) // Get current day + next 4
                     .map(key => dailyForecasts[key]);
 
                 // Clear previous forecasts
-                widgetForecastList.innerHTML = '';
+                widgetForecastHorizontalContainer.innerHTML = '';
 
-                // Display up to 5 days, starting from today
-                let displayedDays = 0;
-                for (const forecast of sortedDailyForecasts) {
-                    if (displayedDays < 5) {
-                        const listItem = document.createElement('div');
-                        listItem.className = 'forecast-item';
-                        listItem.innerHTML = `
-                            <span class="forecast-day">${forecast.day}</span>
-                            <span class="forecast-temp">${Math.round(forecast.max_temp)}°F</span>
-                        `;
-                        widgetForecastList.appendChild(listItem);
-                        displayedDays++;
+                // Display forecast items horizontally with separators
+                sortedDailyForecasts.forEach((forecast, index) => {
+                    const listItem = document.createElement('div');
+                    listItem.className = 'forecast-day-item';
+                    listItem.innerHTML = `
+                        <span class="forecast-day-abbr">${forecast.day}</span>
+                        <span class="forecast-emoji">${getWeatherEmoji(forecast.weatherId)}</span>
+                        <span class="forecast-temps">
+                            <span class="forecast-high">H:${Math.round(forecast.max_temp)}Â°F</span><br>
+                            <span class="forecast-low">L:${Math.round(forecast.min_temp)}Â°F</span>
+                        </span>
+                    `;
+                    widgetForecastHorizontalContainer.appendChild(listItem);
+
+                    if (index < sortedDailyForecasts.length - 1) {
+                        const separator = document.createElement('div');
+                        separator.className = 'vertical-separator';
+                        widgetForecastHorizontalContainer.appendChild(separator);
                     }
-                }
+                });
+
+                weatherErrorElement.style.display = 'none'; // Hide error if successful
             } catch (error) {
                 console.error("Failed to fetch forecast data:", error);
-                widgetForecastList.innerHTML = '<div class="error-message" style="display:block;">Forecast Error</div>';
+                widgetForecastHorizontalContainer.innerHTML = '<div class="error-message" style="display:block;">Forecast Error</div>';
             }
         }
 

@@ -220,11 +220,21 @@
                 }
                 const data = await response.json();
 
-                // Determine if it's daytime based on sunrise/sunset
-                const currentTime = data.dt;
-                const sunriseTime = data.sys.sunrise;
-                const sunsetTime = data.sys.sunset;
-                const isDaytime = (currentTime >= sunriseTime && currentTime < sunsetTime);
+                // Determine if it's daytime based on sunrise/sunset using the city's timezone
+                const timezoneOffset = data.timezone; // Offset in seconds from UTC
+
+                // Adjust current time, sunrise, and sunset by the city's timezone offset
+                const localCurrentTime = data.dt + timezoneOffset;
+                const localSunriseTime = data.sys.sunrise + timezoneOffset;
+                const localSunsetTime = data.sys.sunset + timezoneOffset;
+
+                const isDaytime = (localCurrentTime >= localSunriseTime && localCurrentTime < localSunsetTime);
+
+                console.log('Timezone Offset:', timezoneOffset, 'seconds');
+                console.log('Local Current Time:', new Date(localCurrentTime * 1000).toISOString());
+                console.log('Local Sunrise Time:', new Date(localSunriseTime * 1000).toISOString());
+                console.log('Local Sunset Time:', new Date(localSunsetTime * 1000).toISOString());
+                console.log('Is Daytime:', isDaytime);
 
                 // Update current weather elements
                 widgetCurrentEmojiBg.textContent = getWeatherEmoji(data.weather[0].id, isDaytime);

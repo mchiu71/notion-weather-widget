@@ -185,13 +185,13 @@
         const weatherErrorElement = document.getElementById('weather-error');
 
         // Maps weather condition codes to Unicode emojis
-        function getWeatherEmoji(weatherId) {
+        function getWeatherEmoji(weatherId, isDaytime) {
             if (weatherId >= 200 && weatherId < 300) return '\u26C8\uFE0F'; // ⛈️ Thunderstorm
             if (weatherId >= 300 && weatherId < 400) return '\uD83C\uDF27\uFE0F'; // 🌧️ Drizzle
             if (weatherId >= 500 && weatherId < 600) return '\uD83C\uDF27\uFE0F'; // 🌧️ Rain
             if (weatherId >= 600 && weatherId < 700) return '\u2744\uFE0F'; // ❄️ Snow
             if (weatherId >= 700 && weatherId < 800) return '\uD83C\uDF2B\uFE0F'; // 🌫️ Atmosphere
-            if (weatherId === 800) return '\u2600\uFE0F'; // ☀️ Clear sky
+            if (weatherId === 800) return isDaytime ? '\u2600\uFE0F' : '\uD83C\uDF19'; // ☀️ Clear sky (day) vs 🌙 Clear sky (night)
             if (weatherId === 801) return '\uD83C\uDF24\uFE0F'; // 🌤️ Few clouds
             if (weatherId === 802) return '\uD83C\uDF25\uFE0F'; // 🌥️ Scattered clouds
             if (weatherId === 803 || weatherId === 804) return '\u2601\uFE0F'; // ☁️ Broken clouds, overcast
@@ -220,8 +220,14 @@
                 }
                 const data = await response.json();
 
+                // Determine if it's daytime based on sunrise/sunset
+                const currentTime = data.dt;
+                const sunriseTime = data.sys.sunrise;
+                const sunsetTime = data.sys.sunset;
+                const isDaytime = (currentTime >= sunriseTime && currentTime < sunsetTime);
+
                 // Update current weather elements
-                widgetCurrentEmojiBg.textContent = getWeatherEmoji(data.weather[0].id);
+                widgetCurrentEmojiBg.textContent = getWeatherEmoji(data.weather[0].id, isDaytime);
                 widgetCityElement.textContent = 'Saratoga, CA'; // Explicitly set city name
                 widgetCurrentTempElement.textContent = `${Math.round(data.main.temp)}°F`;
                 widgetConditionsElement.textContent = data.weather[0].description;

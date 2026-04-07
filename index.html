@@ -8,8 +8,7 @@
         /* Base Styling */
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Slightly nicer font */
-            background: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Twemoji", emoji; /* Added emoji fonts */            background: none;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,7 +21,7 @@
             padding: 15px;
             border-radius: 12px; /* Slightly more rounded */
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow */
-            max-width: 900px; /* Increased max width for more room */
+            max-width: 1000px; /* Increased max width for more room */
             margin: 20px auto;
             line-height: 1.4;
             overflow: hidden; /* Ensure content doesn't spill */
@@ -77,7 +76,7 @@
 
         /* Right Pane - 5-Day Forecast */
         .forecast-pane {
-            flex: 2; /* Allow forecast pane to grow more */
+            flex: 2.5; /* Increased flex to make it wider */
             min-width: 300px; /* Minimum width for forecast */
         }
         .forecast-pane h3 {
@@ -223,17 +222,17 @@
                 // Update current weather elements
                 widgetCurrentEmojiBg.textContent = getWeatherEmoji(data.weather[0].id);
                 widgetCityElement.textContent = 'Saratoga, CA'; // Explicitly set city name
-                widgetCurrentTempElement.textContent = `${Math.round(data.main.temp)}Â°F`;
+                widgetCurrentTempElement.textContent = `${Math.round(data.main.temp)}°F`;
                 widgetConditionsElement.textContent = data.weather[0].description;
-                widgetHighLowElement.textContent = `H: ${Math.round(data.main.temp_max)}Â°F | L: ${Math.round(data.main.temp_min)}Â°F`;
+                widgetHighLowElement.textContent = `H: ${Math.round(data.main.temp_max)}°F | L: ${Math.round(data.main.temp_min)}°F`;
                 weatherErrorElement.style.display = 'none'; // Hide error if successful
             } catch (error) {
                 console.error("Failed to fetch current weather data:", error);
                 widgetCurrentEmojiBg.textContent = 'â“';
                 widgetCityElement.textContent = 'Saratoga, CA';
-                widgetCurrentTempElement.textContent = '--Â°F';
+                widgetCurrentTempElement.textContent = '--°F';
                 widgetConditionsElement.textContent = 'N/A';
-                widgetHighLowElement.textContent = 'H:--Â°F | L:--Â°F';
+                widgetHighLowElement.textContent = 'H:--°F | L:--°F';
                 weatherErrorElement.textContent = `Error: ${error.message}`;
                 weatherErrorElement.style.display = 'block';
             }
@@ -287,8 +286,8 @@
                         <span class="forecast-day-abbr">${forecast.day}</span>
                         <span class="forecast-emoji">${getWeatherEmoji(forecast.weatherId)}</span>
                         <span class="forecast-temps">
-                            <span class="forecast-high">H:${Math.round(forecast.max_temp)}Â°F</span><br>
-                            <span class="forecast-low">L:${Math.round(forecast.min_temp)}Â°F</span>
+                            <span class="forecast-high">H:${Math.round(forecast.max_temp)}°F</span><br>
+                            <span class="forecast-low">L:${Math.round(forecast.min_temp)}°F</span>
                         </span>
                     `;
                     widgetForecastHorizontalContainer.appendChild(listItem);

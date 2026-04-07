@@ -8,7 +8,8 @@
         /* Base Styling */
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Twemoji", emoji; /* Added emoji fonts */            background: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Slightly nicer font */
+            background: none;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,7 +22,7 @@
             padding: 15px;
             border-radius: 12px; /* Slightly more rounded */
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow */
-            max-width: 1000px; /* Increased max width for more room */
+            max-width: 900px; /* Increased max width for more room */
             margin: 20px auto;
             line-height: 1.4;
             overflow: hidden; /* Ensure content doesn't spill */
@@ -76,7 +77,7 @@
 
         /* Right Pane - 5-Day Forecast */
         .forecast-pane {
-            flex: 2.5; /* Increased flex to make it wider */
+            flex: 2; /* Allow forecast pane to grow more */
             min-width: 300px; /* Minimum width for forecast */
         }
         .forecast-pane h3 {
@@ -185,16 +186,16 @@
 
         // Maps weather condition codes to Unicode emojis
         function getWeatherEmoji(weatherId) {
-            if (weatherId >= 200 && weatherId < 300) return 'â›ˆï¸'; // Thunderstorm
-            if (weatherId >= 300 && weatherId < 400) return 'ðŸŒ§ï¸'; // Drizzle
-            if (weatherId >= 500 && weatherId < 600) return 'ðŸŒ§ï¸'; // Rain
-            if (weatherId >= 600 && weatherId < 700) return 'â„ï¸'; // Snow
-            if (weatherId >= 700 && weatherId < 800) return 'ðŸŒ«ï¸'; // Atmosphere (mist, fog, haze)
-            if (weatherId === 800) return 'â˜€ï¸'; // Clear sky
-            if (weatherId === 801) return 'ðŸŒ¤ï¸'; // Few clouds
-            if (weatherId === 802) return 'ðŸŒ¥ï¸'; // Scattered clouds
-            if (weatherId === 803 || weatherId === 804) return 'â˜ï¸'; // Broken clouds, overcast
-            return 'â“'; // Unknown
+            if (weatherId >= 200 && weatherId < 300) return '⛈️'; // Thunderstorm
+            if (weatherId >= 300 && weatherId < 400) return '🌧️'; // Drizzle
+            if (weatherId >= 500 && weatherId < 600) return '🌧️'; // Rain
+            if (weatherId >= 600 && weatherId < 700) return '❄️'; // Snow
+            if (weatherId >= 700 && weatherId < 800) return '🌫️'; // Atmosphere (mist, fog, haze)
+            if (weatherId === 800) return '☀️'; // Clear sky
+            if (weatherId === 801) return '🌤️'; // Few clouds
+            if (weatherId === 802) return '🌥️'; // Scattered clouds
+            if (weatherId === 803 || weatherId === 804) return '☁️'; // Broken clouds, overcast
+            return '❓'; // Unknown
         }
 
         // Function to update date and time
@@ -228,7 +229,7 @@
                 weatherErrorElement.style.display = 'none'; // Hide error if successful
             } catch (error) {
                 console.error("Failed to fetch current weather data:", error);
-                widgetCurrentEmojiBg.textContent = 'â“';
+                widgetCurrentEmojiBg.textContent = '❓';
                 widgetCityElement.textContent = 'Saratoga, CA';
                 widgetCurrentTempElement.textContent = '--°F';
                 widgetConditionsElement.textContent = 'N/A';

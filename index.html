@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Date, Time & 5-Day Weather Widget</title>
     <style>
-        /* Base Styling */
-        html, body {
-            margin: 0;
-            background: transparent;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Twemoji", emoji; /* Slightly nicer font */
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,38 +19,37 @@
             background: linear-gradient(135deg, #4A90E2 0%, #5BBAFF 100%);
             color: white;
             padding: 15px;
-            border-radius: 12px; /* Slightly more rounded */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            width: 100%;
             max-width: 1800px; /* Wider max-width */
             margin: 20px auto;
             line-height: 1.4;
-            overflow: hidden; /* Ensure content doesn't spill */
-            position: relative; /* For error message positioning */
+            overflow: hidden;
+            position: relative;
+            box-sizing: border-box;
         }
 
-        /* Pane Styling */
         .pane {
-            padding: 10px 15px; /* More internal padding */
+            padding: 10px 15px;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            border-right: 1px solid rgba(255, 255, 255, 0.2); /* Subtle separator */
-            min-width: 120px; /* Minimum width for each pane */
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 120px;
         }
         .pane:last-child { border-right: none; }
 
-        /* Left Pane - Time & Date */
         .time-date-pane {
-            flex: 0 0 160px; /* Fixed width for time/date */
+            flex: 0 0 180px;
         }
         .time-display { font-size: 2.5em; font-weight: bolder; margin-bottom: 0px; }
         .date-display { font-size: 0.9em; opacity: 0.9; margin-top: 0px; }
 
-        /* Middle Pane - Current Weather */
         .current-weather-pane {
-            flex: 1; /* Takes remaining space, allows it to grow */
-            position: relative; /* For superimposing */
+            flex: 1;
+            position: relative;
             overflow: hidden;
         }
         .weather-emoji-bg {
@@ -62,15 +57,14 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 8em; /* Large emoji for background */
-            opacity: 0.2; /* Translucent */
+            font-size: 8em;
+            opacity: 0.2;
             z-index: 0;
-            line-height: 1; /* Prevent extra spacing for emoji */
+            line-height: 1;
         }
         .weather-text-overlay {
             position: relative;
             z-index: 1;
-            /* Ensure text is readable over emoji */
             text-shadow: 0 0 3px rgba(0,0,0,0.5);
         }
         #widget-city { font-size: 1.5em; font-weight: bold; margin-bottom: 5px; }
@@ -78,48 +72,45 @@
         .conditions-display { font-size: 1.1em; text-transform: capitalize; margin-bottom: 5px; }
         .high-low-display { font-size: 0.9em; opacity: 0.9; }
 
-        /* Right Pane - 5-Day Forecast */
         .forecast-pane {
-            flex: 2; /* Allow forecast pane to grow more */
-            min-width: 300px; /* Minimum width for forecast */
+            flex: 3; /* More room for forecast */
+            min-width: 380px;
         }
         .forecast-pane h3 {
             margin-top: 0;
-            margin-bottom: 15px; /* More space for title */
+            margin-bottom: 15px;
             font-size: 1.1em;
         }
         .forecast-horizontal-container {
             display: flex;
             justify-content: space-around;
-            align-items: flex-start; /* Align items to top */
-            flex-wrap: nowrap; /* Keep items in one line */
-            overflow-x: auto; /* Allow horizontal scrolling if too many days */
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-            padding-bottom: 5px; /* Space for scrollbar if present */
+            align-items: flex-start;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 5px;
             padding-top: 5px;
         }
         .forecast-day-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 0 8px; /* Spacing around each day */
-            flex-shrink: 0; /* Don't shrink forecast items */
-            position: relative;
+            padding: 0 10px;
+            flex-shrink: 0;
         }
         .vertical-separator {
             width: 1px;
             background-color: rgba(255, 255, 255, 0.2);
             align-self: stretch;
             margin: 0 5px;
-            flex-shrink: 0; /* Don't shrink separator */
+            flex-shrink: 0;
         }
-        .forecast-day-abbr { font-weight: bold; font-size: 0.85em; margin-bottom: 3px; }
-        .forecast-emoji { font-size: 2em; margin: 3px 0; line-height: 1; }
-        .forecast-temps { font-size: 0.8em; line-height: 1.2; }
+        .forecast-day-abbr { font-weight: bold; font-size: 0.9em; margin-bottom: 3px; }
+        .forecast-emoji { font-size: 2.2em; margin: 3px 0; line-height: 1; }
+        .forecast-temps { font-size: 0.85em; line-height: 1.4; }
         .forecast-high { font-weight: bold; }
         .forecast-low { opacity: 0.8; }
 
-        /* Error Message */
         .error-message {
             position: absolute;
             bottom: 5px;
@@ -131,17 +122,16 @@
             border-radius: 5px;
             margin-top: 10px;
             display: none;
-            width: calc(100% - 30px); /* Full width minus padding */
+            width: calc(100% - 30px);
             box-sizing: border-box;
             text-align: center;
             font-size: 0.85em;
-            z-index: 10; /* Ensure it's on top */
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 
-    <!-- This is your embeddable widget -->
     <div class="weather-widget-container">
         <!-- Pane 1: Time & Date -->
         <div class="pane time-date-pane">
@@ -173,9 +163,9 @@
 
     <script>
         const API_KEY = '1c47d4c7d6694de1731919721ad0d2a2';
-        const LATITUDE = 37.2639; // Latitude for Saratoga, CA
-        const LONGITUDE = -122.0233; // Longitude for Saratoga, CA
-        const UNITS = 'imperial'; // Use 'imperial' for Fahrenheit
+        const LATITUDE = 37.2639;
+        const LONGITUDE = -122.0233;
+        const UNITS = 'imperial';
 
         const widgetDateElement = document.getElementById('widget-date');
         const widgetTimeElement = document.getElementById('widget-time');
@@ -187,34 +177,29 @@
         const widgetForecastHorizontalContainer = document.getElementById('widget-forecast-horizontal-container');
         const weatherErrorElement = document.getElementById('weather-error');
 
-        // Maps weather condition codes to Unicode emojis
         function getWeatherEmoji(weatherId, isDaytime) {
-            if (weatherId >= 200 && weatherId < 300) return '\u26C8\uFE0F'; // â›ˆï¸ Thunderstorm
-            if (weatherId >= 300 && weatherId < 400) return '\uD83C\uDF27\uFE0F'; // ðŸŒ§ï¸ Drizzle
-            if (weatherId >= 500 && weatherId < 600) return '\uD83C\uDF27\uFE0F'; // ðŸŒ§ï¸ Rain
-            if (weatherId >= 600 && weatherId < 700) return '\u2744\uFE0F'; // â„ï¸ Snow
-            if (weatherId >= 700 && weatherId < 800) return '\uD83C\uDF2B\uFE0F'; // ðŸŒ«ï¸ Atmosphere
-            if (weatherId === 800) return isDaytime ? '\u2600\uFE0F' : '\uD83C\uDF19'; // â˜€ï¸ Clear sky (day) vs ðŸŒ™ Clear sky (night)
-            if (weatherId === 801) return '\uD83C\uDF24\uFE0F'; // ðŸŒ¤ï¸ Few clouds
-            if (weatherId === 802) return '\uD83C\uDF25\uFE0F'; // ðŸŒ¥ï¸ Scattered clouds
-            if (weatherId === 803 || weatherId === 804) return '\u2601\uFE0F'; // â˜ï¸ Broken clouds, overcast
-            return '\u2753'; // â“ Unknown
+            if (weatherId >= 200 && weatherId < 300) return '\u26C8\uFE0F';
+            if (weatherId >= 300 && weatherId < 400) return '\uD83C\uDF27\uFE0F';
+            if (weatherId >= 500 && weatherId < 600) return '\uD83C\uDF27\uFE0F';
+            if (weatherId >= 600 && weatherId < 700) return '\u2744\uFE0F';
+            if (weatherId >= 700 && weatherId < 800) return '\uD83C\uDF2B\uFE0F';
+            if (weatherId === 800) return isDaytime ? '\u2600\uFE0F' : '\uD83C\uDF19';
+            if (weatherId === 801) return '\uD83C\uDF24\uFE0F';
+            if (weatherId === 802) return '\uD83C\uDF25\uFE0F';
+            if (weatherId === 803 || weatherId === 804) return '\u2601\uFE0F';
+            return '\u2753';
         }
 
-        // Function to update date and time
         function updateDateTime() {
             const now = new Date();
             const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-
             widgetDateElement.textContent = now.toLocaleDateString(undefined, optionsDate);
             widgetTimeElement.textContent = now.toLocaleTimeString(undefined, optionsTime);
         }
 
-        // Function to fetch current weather data
         async function fetchCurrentWeatherData(lat, lon) {
             const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}`;
-
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -223,45 +208,32 @@
                 }
                 const data = await response.json();
 
-                // Determine if it's daytime based on sunrise/sunset using the city's timezone
-                const timezoneOffset = data.timezone; // Offset in seconds from UTC
-
-                // Adjust current time, sunrise, and sunset by the city's timezone offset
+                const timezoneOffset = data.timezone;
                 const localCurrentTime = data.dt + timezoneOffset;
                 const localSunriseTime = data.sys.sunrise + timezoneOffset;
                 const localSunsetTime = data.sys.sunset + timezoneOffset;
-
                 const isDaytime = (localCurrentTime >= localSunriseTime && localCurrentTime < localSunsetTime);
 
-                console.log('Timezone Offset:', timezoneOffset, 'seconds');
-                console.log('Local Current Time:', new Date(localCurrentTime * 1000).toISOString());
-                console.log('Local Sunrise Time:', new Date(localSunriseTime * 1000).toISOString());
-                console.log('Local Sunset Time:', new Date(localSunsetTime * 1000).toISOString());
-                console.log('Is Daytime:', isDaytime);
-
-                // Update current weather elements
                 widgetCurrentEmojiBg.textContent = getWeatherEmoji(data.weather[0].id, isDaytime);
-                widgetCityElement.textContent = 'Saratoga, CA'; // Explicitly set city name
-                widgetCurrentTempElement.textContent = `${Math.round(data.main.temp)}Â°F`;
+                widgetCityElement.textContent = 'Saratoga, CA';
+                widgetCurrentTempElement.textContent = `${Math.round(data.main.temp)}°F`;
                 widgetConditionsElement.textContent = data.weather[0].description;
-                widgetHighLowElement.textContent = `H: ${Math.round(data.main.temp_max)}Â°F | L: ${Math.round(data.main.temp_min)}Â°F`;
-                weatherErrorElement.style.display = 'none'; // Hide error if successful
+                widgetHighLowElement.textContent = `H: ${Math.round(data.main.temp_max)}°F | L: ${Math.round(data.main.temp_min)}°F`;
+                weatherErrorElement.style.display = 'none';
             } catch (error) {
                 console.error("Failed to fetch current weather data:", error);
-                widgetCurrentEmojiBg.textContent = 'â“';
+                widgetCurrentEmojiBg.textContent = '❓';
                 widgetCityElement.textContent = 'Saratoga, CA';
-                widgetCurrentTempElement.textContent = '--Â°F';
+                widgetCurrentTempElement.textContent = '--°F';
                 widgetConditionsElement.textContent = 'N/A';
-                widgetHighLowElement.textContent = 'H:--Â°F | L:--Â°F';
+                widgetHighLowElement.textContent = 'H:--°F | L:--°F';
                 weatherErrorElement.textContent = `Error: ${error.message}`;
                 weatherErrorElement.style.display = 'block';
             }
         }
 
-        // Function to fetch 5-day forecast data
         async function fetchForecastData(lat, lon) {
             const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}`;
-
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -270,44 +242,71 @@
                 }
                 const data = await response.json();
 
-                // Process 5-day / 3-hour forecast to get daily high and low temperatures
-                const dailyForecasts = {}; // { 'YYYY-MM-DD': { max_temp: X, min_temp: Y, day: 'Mon', weatherId: Z } }
+                // FIX: Use the city's UTC offset from the API response to compute
+                // the correct local date string, instead of relying on the browser's
+                // timezone. This prevents duplicate day names when the browser timezone
+                // differs from the widget's location (e.g., inside a Notion iframe).
+                const cityTimezoneOffsetSeconds = data.city.timezone;
+
+                const dailyForecasts = {};
 
                 data.list.forEach(item => {
-                    const date = new Date(item.dt * 1000); // Convert timestamp to Date object
-                    const dateKey = date.toISOString().split('T')[0];
-                    const dayName = date.toLocaleDateString(undefined, { weekday: 'short' });
+                    // Compute local timestamp for Saratoga using city's UTC offset
+                    const localTimestamp = (item.dt + cityTimezoneOffsetSeconds) * 1000;
+                    const localDate = new Date(localTimestamp);
+
+                    // Build a date key using UTC methods on the shifted timestamp
+                    // (since we've already added the offset, UTC getters give local values)
+                    const year = localDate.getUTCFullYear();
+                    const month = String(localDate.getUTCMonth() + 1).padStart(2, '0');
+                    const day = String(localDate.getUTCDate()).padStart(2, '0');
+                    const dateKey = `${year}-${month}-${day}`;
+
+                    // Get day abbreviation from the correct local day-of-week
+                    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    const dayName = dayNames[localDate.getUTCDay()];
 
                     if (!dailyForecasts[dateKey]) {
-                        dailyForecasts[dateKey] = { max_temp: -Infinity, min_temp: Infinity, day: dayName, weatherId: item.weather[0].id };
+                        dailyForecasts[dateKey] = {
+                            max_temp: -Infinity,
+                            min_temp: Infinity,
+                            day: dayName,
+                            weatherId: item.weather[0].id
+                        };
                     }
                     dailyForecasts[dateKey].max_temp = Math.max(dailyForecasts[dateKey].max_temp, item.main.temp_max);
                     dailyForecasts[dateKey].min_temp = Math.min(dailyForecasts[dateKey].min_temp, item.main.temp_min);
-                    // Update weatherId if a clearer one appears later in the day
                     if (item.weather[0].id !== 800 && item.weather[0].id > dailyForecasts[dateKey].weatherId) {
-                         dailyForecasts[dateKey].weatherId = item.weather[0].id;
+                        dailyForecasts[dateKey].weatherId = item.weather[0].id;
                     }
                 });
 
-                // Convert to array and sort by date, then take up to 5 days
+                // Skip today, show next 5 days
+                const today = (() => {
+                    const now = new Date((Date.now() / 1000 + cityTimezoneOffsetSeconds) * 1000);
+                    const y = now.getUTCFullYear();
+                    const m = String(now.getUTCMonth() + 1).padStart(2, '0');
+                    const d = String(now.getUTCDate()).padStart(2, '0');
+                    return `${y}-${m}-${d}`;
+                })();
+
                 const sortedDailyForecasts = Object.keys(dailyForecasts)
                     .sort()
-                    .slice(0, 5) // Get current day + next 4
+                    .filter(key => key > today)  // Exclude today — forecast days only
+                    .slice(0, 5)
                     .map(key => dailyForecasts[key]);
 
-                // Clear previous forecasts
                 widgetForecastHorizontalContainer.innerHTML = '';
 
-                // Display forecast items horizontally with separators
                 sortedDailyForecasts.forEach((forecast, index) => {
                     const listItem = document.createElement('div');
                     listItem.className = 'forecast-day-item';
                     listItem.innerHTML = `
                         <span class="forecast-day-abbr">${forecast.day}</span>
-                        <span class="forecast-emoji">${getWeatherEmoji(forecast.weatherId)}</span>
+                        <span class="forecast-emoji">${getWeatherEmoji(forecast.weatherId, true)}</span>
                         <span class="forecast-temps">
-                            <span class="forecast-high">H:${Math.round(forecast.max_temp)}Â°F</span><br>
-                            <span class="forecast-low">L:${Math.round(forecast.min_temp)}Â°F</span>
+                            <span class="forecast-high">H:${Math.round(forecast.max_temp)}°F</span><br>
+                            <span class="forecast-low">L:${Math.round(forecast.min_temp)}°F</span>
                         </span>
                     `;
                     widgetForecastHorizontalContainer.appendChild(listItem);
@@ -319,24 +318,22 @@
                     }
                 });
 
-                weatherErrorElement.style.display = 'none'; // Hide error if successful
+                weatherErrorElement.style.display = 'none';
             } catch (error) {
                 console.error("Failed to fetch forecast data:", error);
                 widgetForecastHorizontalContainer.innerHTML = '<div class="error-message" style="display:block;">Forecast Error</div>';
             }
         }
 
-        // Initialize and update
         document.addEventListener('DOMContentLoaded', () => {
             updateDateTime();
-            setInterval(updateDateTime, 1000); // Update time every second
-
+            setInterval(updateDateTime, 1000);
             fetchCurrentWeatherData(LATITUDE, LONGITUDE);
             fetchForecastData(LATITUDE, LONGITUDE);
             setInterval(() => {
                 fetchCurrentWeatherData(LATITUDE, LONGITUDE);
                 fetchForecastData(LATITUDE, LONGITUDE);
-            }, 600000); // Update weather every 10 minutes (600000 ms)
+            }, 600000);
         });
     </script>
 </body>

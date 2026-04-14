@@ -105,9 +105,13 @@
 
     <script>
         const API_KEY = '1c47d4c7d6694de1731919721ad0d2a2';
-        const LATITUDE = 37.2639;
-        const LONGITUDE = -122.0233;
         const UNITS = 'imperial';
+
+        // Get location from URL parameters, fallback to Saratoga
+        const params = new URLSearchParams(window.location.search);
+        const LATITUDE = parseFloat(params.get('lat')) || 37.2639;
+        const LONGITUDE = parseFloat(params.get('lon')) || -122.0233;
+        const CITY_NAME = params.get('city') || 'Saratoga, CA';
 
         function getWeatherEmoji(weatherId, isDaytime) {
             if (weatherId >= 200 && weatherId < 300) return '⛈️';
@@ -133,6 +137,7 @@
                 document.getElementById('current-emoji').textContent = getWeatherEmoji(currentData.weather[0].id, isDaytime);
                 document.getElementById('current-temp').textContent = `${Math.round(currentData.main.temp)}°F`;
                 document.getElementById('current-desc').textContent = currentData.weather[0].description;
+                document.getElementById('current-loc').textContent = CITY_NAME;
                 
                 // Fetch Forecast
                 const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${LATITUDE}&lon=${LONGITUDE}&appid=${API_KEY}&units=${UNITS}`;
